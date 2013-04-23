@@ -10,19 +10,12 @@ time_t start, stop;
 int diff;
 int ret;
 
-void * crack();
+void * crack3();
+void doThree();
 int unzip(char * pass);
 int main(int argc, char * argv[])
 {
-    pthread_t thread[MAX_THREAD_NUM];
-    pthread_t thread1;
-    pthread_attr_t attr;
-    int id;
-    int* ids_t = (int *) malloc(MAX_THREAD_NUM * sizeof(int));
-    int i;
-    for (i = 0; i < MAX_THREAD_NUM; i++)
-        ids_t[i] = i;
-
+    
     int min_char = 1;
     int max_char = 3;
     char * start_pat = "a";
@@ -34,10 +27,8 @@ int main(int argc, char * argv[])
         start_pat = argv[3];
         end_pat = argv[4];
     }
-    //pthread_create(&thread1,NULL, crack, (void *)&ids_t[0]);
-   // pthread_join(thread1, NULL);
-    crack();
-    //  char  test = 'a';
+    doThree();
+        //  char  test = 'a';
     //  printf("test1: %s\n", test);
     //  test++;
     //  printf("test2: %s\n", test);
@@ -45,16 +36,31 @@ int main(int argc, char * argv[])
     //  printf("Cmd: %s\n", cmd);
     return 0;
 }
-void * crack()
+void doThree()
+{
+
+    pthread_t thread[MAX_THREAD_NUM];
+    pthread_t thread1;
+    int id;
+    int* ids_t = (int *) malloc(MAX_THREAD_NUM * sizeof(int));
+    int i;
+    for (i = 0; i < MAX_THREAD_NUM; i++)
+        ids_t[i] = i;
+    pthread_create(&thread1,NULL, crack3, (void *)&ids_t[0]);
+    pthread_join(thread1, NULL);
+
+
+}
+void * crack3()
 {
 char alphanum[63] = 
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 "abcdefghijklmnopqrstuvwxyz"
 "0123456789";
 
-
+int max = 3;
     int i, j, k, l, m, n, o, p, q, r;
-    char string1[3 + 1];
+    char string1[max + 1];
     start = time(NULL);
     for (i = 0; i < strlen(alphanum); i++) {
         string1[0] = alphanum[i];
