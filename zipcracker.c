@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
 {
 
     int min_char = 1;
-    int max_char = 3;
+    int max_char = 4;
     char * start_pat = "a";
     char * end_pat = "zzz";
     if (argc == 5)
@@ -56,11 +56,11 @@ void doThree()
         int c2 = (((i +1) * block_size) % (int)pow(62, 2)) % 62; 
         if (i == MAX_THREAD_NUM - 1)
         {
-           /*printf("MOD: %d\n", a2 % (int)pow(62, 2)); 
-            printf("a2: %d\n", a2);
-            printf("b2: %d\n", b2);
-            printf("c2: %d\n", c2);
-            */
+            /*printf("MOD: %d\n", a2 % (int)pow(62, 2)); 
+              printf("a2: %d\n", a2);
+              printf("b2: %d\n", b2);
+              printf("c2: %d\n", c2);
+              */
             a2 = 62;
             b2 = 62;
             c2 = 62;
@@ -75,7 +75,7 @@ void doThree()
     }
     int id;
     int* ids_t = (int *) malloc(MAX_THREAD_NUM * sizeof(int));
-    
+
     start = time(NULL);
     for (i = 0; i < MAX_THREAD_NUM; i++)
         ids_t[i] = i;
@@ -84,11 +84,11 @@ void doThree()
     for (i = 0; i < MAX_THREAD_NUM; i++)
         pthread_join(thread[i], NULL);
 
-                stop = time(NULL);
-                    diff = difftime(stop, start);
-                    printf("Time: %d\n", diff);
-                    printf("Passwords: %d\n", (int)pow(62,3));
-                    printf("PPS: %d\n", ((int)pow(62, 3)) / diff);
+    stop = time(NULL);
+    diff = difftime(stop, start);
+    printf("Time: %d\n", diff);
+    printf("Passwords: %d\n", (int)pow(62,3));
+    printf("PPS: %d\n", ((int)pow(62, 3)) / diff);
 
 }
 void * crack3(void *arguments)
@@ -127,7 +127,51 @@ void * crack3(void *arguments)
             break;
     }
     //printf("End Count: %d\n", count);
-   // printf("String1: %s\n", string1);
+    // printf("String1: %s\n", string1);
+    return NULL;
+}
+void * crack4(void *arguments)
+{
+
+    char alphanum[63] = 
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789";
+    struct arg_struct *args = arguments;
+    int max = 3;
+    int i, j, k, l, m, n, o, p, q, r;
+    char string1[max + 1];
+    count = 0;
+    for (i = args->min_i; i <= args->max_i; i++) {
+        string1[0] = alphanum[i];
+        for (j = args->min_j; j <= args->max_j; j++) {
+            string1[1] = alphanum[j];
+            for (k = args->min_k; k <= args->max_k; k++) {
+                string1[2] = alphanum[k];
+                for(l = args->min->l; l <= args->max_l; l++){
+                    string[3] = alphanum[l];
+                    system("rm -rf ggg > /dev/null 2>&1");
+                    ret = unzip(string1);
+                    count++;
+                    if (ret == 0)
+                    {
+                        printf("PASS: %s\n", string1);
+                        if (diff == 0)
+                            diff = 1;
+                        break;
+                    }
+                }
+                if (ret == 0)
+                    break;
+            }
+            if (ret == 0)
+                break;
+        }
+        if (ret == 0)
+            break;
+    }
+    //printf("End Count: %d\n", count);
+    // printf("String1: %s\n", string1);
     return NULL;
 }
 int unzip(char * pass)
