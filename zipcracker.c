@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <math.h>
 
-#define MAX_THREAD_NUM 50
+#define MAX_THREAD_NUM 80
 struct arg_struct {
     int min_i;
     int max_i;
@@ -45,20 +45,50 @@ void doThree()
     printf("Block Size: %d\n", block_size);
     pthread_t thread[MAX_THREAD_NUM];
     struct arg_struct args[MAX_THREAD_NUM];
-    args[0].min_i = 0;
-    args[0].max_i = 1;
-    args[0].min_j = 0;
-    args[0].max_j = 14;
-    args[0].min_k = 0;
-    args[0].max_k = 26;
+    int i; 
+    for (i = 0; i < MAX_THREAD_NUM; i++)
+    {
+        int a1 = (i * block_size) / pow(62, 2);
+        int b1 = (((i * block_size) % (int)pow(62, 2)) / 62); 
+        int c1 = (((i * block_size) % (int)pow(62, 2)) % 62);
+        int a2 = ((i +1) * block_size) / pow(62, 2);
+        int b2 = (((i +1) * block_size) % (int)pow(62, 2)) / 62; 
+        int c2 = (((i +1) * block_size) % (int)pow(62, 2)) % 62; 
+        if (i == MAX_THREAD_NUM - 1)
+        {
+           /*printf("MOD: %d\n", a2 % (int)pow(62, 2)); 
+            printf("a2: %d\n", a2);
+            printf("b2: %d\n", b2);
+            printf("c2: %d\n", c2);
+            */
+            a2 = 62;
+            b2 = 62;
+            c2 = 62;
+        }
+
+        args[i].min_i = a1;
+        args[i].max_i = a2;
+        args[i].min_j = b1;
+        args[i].max_j = b2;
+        args[i].min_k = c1;
+        args[i].max_k = c2;
+    }
     int id;
     int* ids_t = (int *) malloc(MAX_THREAD_NUM * sizeof(int));
-    int i;
+    
+    start = time(NULL);
     for (i = 0; i < MAX_THREAD_NUM; i++)
         ids_t[i] = i;
-    pthread_create(&thread[0],NULL, crack3, (void *)&args[0]);
-    pthread_join(thread[0], NULL);
+    for (i = 0; i < MAX_THREAD_NUM; i++)
+        pthread_create(&thread[i],NULL, crack3, (void *)&args[i]);
+    for (i = 0; i < MAX_THREAD_NUM; i++)
+        pthread_join(thread[i], NULL);
 
+                stop = time(NULL);
+                    diff = difftime(stop, start);
+                    printf("Time: %d\n", diff);
+                    printf("Passwords: %d\n", (int)pow(62,3));
+                    printf("PPS: %d\n", ((int)pow(62, 3)) / diff);
 
 }
 void * crack3(void *arguments)
@@ -69,44 +99,35 @@ void * crack3(void *arguments)
         "abcdefghijklmnopqrstuvwxyz"
         "0123456789";
     struct arg_struct *args = arguments;
-    printf("Max K: %d", args->max_k);
     int max = 3;
     int i, j, k, l, m, n, o, p, q, r;
     char string1[max + 1];
-    start = time(NULL);
     count = 0;
-    //strlen(alphanum)
     for (i = args->min_i; i <= args->max_i; i++) {
         string1[0] = alphanum[i];
         for (j = args->min_j; j <= args->max_j; j++) {
             string1[1] = alphanum[j];
             for (k = args->min_k; k <= args->max_k; k++) {
                 string1[2] = alphanum[k];
-                system("rm -rf ggg");
+                system("rm -rf ggg > /dev/null 2>&1");
                 ret = unzip(string1);
                 count++;
                 if (ret == 0)
                 {
-                    stop = time(NULL);
-                    diff = difftime(stop, start);
                     printf("PASS: %s\n", string1);
-                    printf("Time: %d\n", diff);
-                    printf("count: %d\n", count);
                     if (diff == 0)
                         diff = 1;
-                    printf("PPS: %d\n", count / diff);
                     break;
                 }
             }
             if (ret == 0)
                 break;
         }
-        //printf("String1: %s\n", string1);
         if (ret == 0)
             break;
     }
-    printf("End Count: %d\n", count);
-    printf("String1: %s\n", string1);
+    //printf("End Count: %d\n", count);
+   // printf("String1: %s\n", string1);
     return NULL;
 }
 int unzip(char * pass)
